@@ -3,7 +3,8 @@
 ## How to run
 
 ```
+source .venv/bin/activate
 cd nso-mcp
-uv run mkdocs serve
+mkdocs serve
 
 ```
