@@ -1,0 +1,26 @@
+# タイトル
+site_name: NSO MCP ハンズオン
+
+# ナビゲーション
+nav:
+  - はじめに: index.md
+  - NSO MCP のセットアップ: 01-setup-mcp.md
+  - bgpmgr サービス:  02-nso-mcp-services-bgp.md
+  - NSO MCP のポリシー: 03-nso-mcp-policy.md
+  - 余裕のある方：アクション Tools の定義: 04-define-action-tools.md
+  - 参考：英語キーボードへの変更方法: 05-change-keyboard.md
+
+
+theme:
+  name: material
+
+markdown_extensions:
+  - admonition   # アドモニション
+  - pymdownx.keys  # キーボード
+  - pymdownx.details  # 折りたたみ展開
+  - pymdownx.emoji:  # 絵文字とアイコン
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
