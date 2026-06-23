@@ -1,6 +1,10 @@
 # NSO MCP server hands-on scenario
 
-## How to run
+
+## Web page
+https://hitakaha.github.io/nso-hands-on-mcp-server/
+
+## How to run locall
 
 ```
 source .venv/bin/activate
