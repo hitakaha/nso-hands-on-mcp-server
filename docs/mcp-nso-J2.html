@@ -83,10 +83,9 @@
         <ul>
           <li>Anthropic が2024年11月に提唱した<strong>オープンプロトコル</strong>です</li>
           <li><strong>LLMアプリケーション</strong>が外部の<strong>コンテキストプロバイダー</strong>に接続する方法を標準化しています</li>
-          <li>電文フォーマットは<strong>JSON-RPC 2.0</strong>です</li>
         </ul>
         <div class="spec">
-          📘 AIアプリケーションの「USB-C」— 1つのコネクタで多様な機能をつなぎます。
+          📘 AI App の「USB-C」といわれ 1 つのコネクタで多様な機能をつなぎます。
         </div>
       </section>
 
@@ -94,8 +93,7 @@
         <h2>MCPサーバーとは？</h2>
         <ul>
           <li>MCP経由で<strong>機能を公開</strong>するプログラムです</li>
-          <li>定義されたトランスポート上で JSON-RPC 2.0 を使用します</li>
-          <li>ステートレス／ステートフル、ローカル／リモートのいずれにも対応しています</li>
+          <li>ローカル／リモートのいずれにも対応しています</li>
           <li>モデル非依存 — どのLLMが利用されているかを関知しません</li>
         </ul>
       </section>
@@ -117,8 +115,8 @@
         <p class="small">仕様が定義する3つのロールは以下のとおりです：</p>
         <div class="arch">LLM &nbsp;⇄&nbsp; Host (with MCP Client) &nbsp;⇄&nbsp; MCP Server(s)</div>
         <ul class="small">
-          <li><strong>Host</strong> — LLMアプリケーション本体です（Claude Desktop、IDE、エージェントなど）</li>
-          <li><strong>Client</strong> — Host 内部のコンポーネントで、サーバー接続ごとに1インスタンス存在します</li>
+          <li><strong>LLM</strong> — 任意の LLM モデル、複数使用可能です</li>
+          <li><strong>Host</strong> — アプリケーション本体です（Claude Desktop、IDE など）</li>
           <li><strong>Server</strong> — ツール・リソース・プロンプトを提供します</li>
         </ul>
         <div class="note">
@@ -127,7 +125,7 @@
       </section>
 
       <section>
-        <h2>3つのプリミティブ</h2>
+        <h2>MCP サーバが公開するもの</h2>
         <p class="center">
           <span class="badge">🛠️ Tools</span>
           <span class="badge">📚 Resources</span>
@@ -135,14 +133,14 @@
         </p>
         <ul class="small">
           <li>🛠️ <strong>Tools</strong> → 実行可能な関数 <br><em>（例：<code>search_db</code>、<code>send_email</code>）</em></li>
-          <li>📚 <strong>Resources</strong> → 参照可能な読み取りデータ <br><em>（例：ファイル、DBレコード、APIレスポンス）</em></li>
-          <li>📝 <strong>Prompts</strong> → パラメータ付きの再利用可能なテンプレート <br><em>（例：スラッシュコマンド、ワークフロー）</em></li>
+          <li>📚 <strong>Resources</strong> → 参照可能なデータ <br><em>（例：ファイル、DBレコード、APIレスポンス）</em></li>
+          <li>📝 <strong>Prompts</strong> → パラメータ付きのプロンプトのテンプレート <br><em>（例：スラッシュコマンド、ワークフロー）</em></li>
         </ul>
       </section>
 
       <!-- ===== Section 2: Without MCP ===== -->
       <section>
-        <h2>LLMの会話 — MCP<em>なし</em></h2>
+        <h2>MCP<em>なし</em>での LLM 実装</h2>
         <p class="small">従来のループ（ユーザー ↔ モデルのみ）です。</p>
         <div class="mermaid">
 flowchart LR
@@ -155,7 +153,7 @@ flowchart LR
         <h2>MCPなしの制約</h2>
         <ul>
           <li>❌ LLMは学習データの範囲しか知りません</li>
-          <li>❌ リアルタイムデータや非公開データにはアクセスできません</li>
+          <li>❌ リアルタイム・非公開データにはアクセスできません</li>
           <li>❌ 現実世界への操作・アクションはできません</li>
           <li>✅ 汎用的なQ&amp;Aや推論には引き続き有効です</li>
         </ul>
@@ -163,8 +161,8 @@ flowchart LR
 
       <!-- ===== Section 3: With MCP ===== -->
       <section>
-        <h2>LLMの会話 — MCP<em>あり</em></h2>
-        <p class="small">ステップ1：ディスカバリ。HostのMCP Clientがサーバーに利用可能なリソースを問い合わせます。</p>
+        <h2>MCP<em>あり</em>での LLM 実装</h2>
+        <p class="small">ステップ1：ディスカバリ。HostのMCP Clientがサーバーに利用可能な ツール等を問い合わせます。</p>
         <div class="mermaid">
 sequenceDiagram
     autonumber
@@ -202,8 +200,8 @@ sequenceDiagram
       <section>
         <h2>重要なポイント：2つのプロトコル</h2>
         <ul>
-          <li>LLMは<strong>独自の関数呼び出し形式</strong>（またはReActスタイルのプロンプト）を使用します</li>
-          <li>MCPサーバーは<strong>JSON-RPC / MCP</strong>を使用します</li>
+          <li>LLMはReAct: Reasoning（思考）- Acting（行動）スタイルのプロンプト等を使用します</li>
+          <li>MCPサーバーはプロトコルとして<strong>MCP</strong>を使用します</li>
           <li><strong>Host</strong>がその間の変換・仲介を担います</li>
         </ul>
         <div class="spec">
@@ -225,7 +223,7 @@ sequenceDiagram
           <tbody>
             <tr>
               <td>🛠️ Tools</td>
-              <td>モデル</td>
+              <td>LLM モデル</td>
               <td>LLMが呼び出しを判断</td>
             </tr>
             <tr>
@@ -248,14 +246,14 @@ sequenceDiagram
         <h2>MCPが重要な理由</h2>
         <ul>
           <li>✅ <strong>標準化</strong> — サーバーを一度実装すれば多くのHostで再利用できます</li>
-          <li>✅ <strong>コンポーザブル</strong> — 1セッション内で複数のサーバーを同時利用できます</li>
-          <li>✅ <strong>関心の分離</strong> — モデルが推論、サーバーが機能提供、Hostが制御を担います</li>
-          <li>✅ <strong>監査可能</strong> — 場当たり的な統合ではなく、明示的・構造化されたツール呼び出しを行います</li>
+          <li>✅ <strong>組み合わせ可能</strong> — 1セッション内で複数のサーバーを同時利用できます</li>
+          <li>✅ <strong>役割の明確化</strong> — モデルが推論、サーバーが機能提供、Hostが制御を担います</li>
+          <li>✅ <strong>監査可能</strong> — その場限りの組み合わせではなく、明確に定義された方法です</li>
         </ul>
       </section>
 
       <section>
-        <h2>MCPが<em>そうでない</em>もの</h2>
+        <h2>よくあるMCPの<em>間違い</em></h2>
         <ul>
           <li>❌ LLM APIの代替ではありません</li>
           <li>❌ それ単体ではサンドボックスやセキュリティ境界にはなりません</li>
@@ -266,21 +264,21 @@ sequenceDiagram
 
       <!-- ===== NEW Chapter: In-Product AI — NSO ===== -->
       <section>
-        <h1>🚀 プロダクト内AI活用</h1>
-        <h3>Cisco NSO 上の MCP Server</h3>
-        <p class="small">MCPをプロダクト<em>内部</em>に組み込みます。</p>
+        <h1>AI によるネットワーク制御</h1>
+        <h3>🚀 NSO が MCP サーバとして機能します</h3>
+        <p class="small"><em>NSO 6.7</em>での新機能です</p>
       </section>
 
       <section>
-        <h2>構成</h2>
-        <p class="small">MCPの各ロールを当社スタックにマッピングします：</p>
+        <h2>必要な構成</h2>
+        <p class="small">MCPを使うための各役割は下記のようになります：</p>
         <ul>
           <li>🔌 <strong>MCP Server</strong> → <strong>Cisco NSO</strong> <br><span class="tiny">NSOのデータ・操作を Tools/Resources として公開します</span></li>
-          <li>🖥️ <strong>Host + MCP Client</strong> → <strong>Streamlit UI搭載のカスタムPythonアプリ</strong></li>
-          <li>🧠 <strong>LLM</strong> → <strong>CIRCUIT</strong>（Cisco 社内LLM）</li>
+          <li>🖥️ <strong>Host + MCP Client</strong> → <strong>Streamlit UIのカスタムPythonアプリ</strong></li>
+          <li>🧠 <strong>LLM</strong> → <strong>Cisco AI</strong>（デモ用LLM）</li>
         </ul>
         <div class="spec">
-          📘 同じMCPアーキテクチャに、当社の各コンポーネントを接続した構成です。
+          📘 同じMCPアーキテクチャに、弊社の各コンポーネントを接続した構成です。
         </div>
       </section>
 
@@ -293,7 +291,7 @@ flowchart LR
       UI[Streamlit UI]
       C[MCP Client]
     end
-    L[[🧠 CIRCUIT LLM]]
+    L[[🧠 Cisco AI LLM]]
     subgraph NSO["🔌 Cisco NSO — MCP Server"]
       T[🛠️ Tools]
       R[📚 Resources]
@@ -305,7 +303,7 @@ flowchart LR
     C <-- プロンプト＋ツール --> L
     C <-- JSON-RPC / MCP --> NSO
         </div>
-        <p class="tiny">CIRCUITが推論し、Streamlit Hostが制御、NSOがネットワーク機能を提供します。</p>
+        <p class="tiny">Cisco AIが推論し、Streamlit Hostが制御、NSOがネットワーク機能を提供します。</p>
       </section>
 
       <section>
@@ -316,12 +314,12 @@ sequenceDiagram
     participant U as 👤 ユーザー
     participant S as 🖥️ Streamlit Host
     participant N as 🔌 NSO (MCP Server)
-    participant C as 🧠 CIRCUIT
+    participant C as 🧠 Cisco AI
 
     U->>S: ネットワークの照会・変更を依頼
     S->>N: tools/list
     N-->>S: NSOツール一覧（例：get_device, set_config）
-    S->>C: プロンプト＋ツールスキーマ
+    S->>C: プロンプト＋ツール
     loop ツール呼び出しループ
         C-->>S: tool_use (name, args)
         S->>N: tools/call
@@ -337,16 +335,10 @@ sequenceDiagram
         <h2>この構成が強力な理由</h2>
         <ul>
           <li>✅ NSOのコアを変更せずに<strong>AI対応</strong>を実現できます</li>
-          <li>✅ CIRCUITが実際のネットワーク状態を<strong>参照・操作</strong>できます</li>
+          <li>✅ Cisco AIが実際のネットワーク状態を<strong>参照・操作</strong>できます</li>
           <li>✅ Streamlit Hostは<strong>シンプル</strong>なまま — 制御とUIのみを担います</li>
           <li>✅ 標準プロトコルにより、LLMの差し替えやMCPサーバーの追加が容易です</li>
         </ul>
-      </section>
-
-      <!-- ===== Demo slide ===== -->
-      <section data-background-color="#0d1117">
-        <p class="demo-title">🎬 デモ</p>
-        <p class="small">Cisco NSO + CIRCUIT + Streamlit をライブでお見せします。</p>
       </section>
 
       <!-- ===== Closing ===== -->
@@ -356,6 +348,14 @@ sequenceDiagram
         <p class="small">…NSOをMCPサーバーにすることで、その手はネットワークにまで届きます。</p>
         <p class="tiny">ありがとうございました！👋</p>
       </section>
+
+      <!-- ===== Demo slide ===== -->
+      <section data-background-color="#0d1117">
+        <p class="demo-title">💻 ハンズオン</p>
+        <p class="small">Cisco NSO + Cisco AI + Streamlit を実際に触ってみましょう！</p>
+	<p class="small"><a href="https://hitakaha.github.io/nso-hands-on-mcp-server/">ハンズオンドキュメントに戻る</a></p>
+      </section>
+
 
     </div>
   </div>
