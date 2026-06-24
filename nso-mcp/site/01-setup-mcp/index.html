@@ -317,10 +317,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-ubuntu" class="md-nav__link">
+  <a href="#1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ステップ 1: Ubuntuホストでターミナルを開く
+        ステップ 1: 作業用ホストでターミナルを開く
       
     </span>
   </a>
@@ -669,10 +669,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-ubuntu" class="md-nav__link">
+  <a href="#1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ステップ 1: Ubuntuホストでターミナルを開く
+        ステップ 1: 作業用ホストでターミナルを開く
       
     </span>
   </a>
@@ -862,7 +862,7 @@
 
 
 <h1 id="nso-mcp">NSO MCP サーバのセットアップ</h1>
-<p>このセッションでは、<strong>NSO 6.7</strong>の目玉機能である<strong>Model Context Protocol (MCP) サーバー</strong>について、
+<p>このセッションでは、<strong>NSO 6.7</strong> の新機能である<strong>Model Context Protocol (MCP) サーバー</strong>について、
 インストールからセットアップまで行います。</p>
 <p>新規にNSO 6.7インスタンスをセットアップし、MCPを通じてそれを公開し、自然言語クライアントでNSOを操作します。これらはすべてdCloudのオールインワンシナリオで行います。</p>
 <h2 id="_1">学習目標</h2>
@@ -903,13 +903,13 @@
 </table>
 <p>このラボでは、カスタムの <strong>MCPクライアント</strong>（手順の後半で使用）がNSOに接続し、<strong>Cisco AI</strong> を活用してWebブラウザを通じたAIインターフェースを提供します。</p>
 <h2 id="_2">手順</h2>
-<h3 id="1-ubuntu">ステップ 1: Ubuntuホストでターミナルを開く</h3>
+<h3 id="1">ステップ 1: 作業用ホストでターミナルを開く</h3>
 <p>dCloudシナリオがアクティブになったら、<strong>Win11</strong> の <strong>VM Console</strong> を開きます
 （Ubuntu を使用していただいても大丈夫です）。</p>
 <p><img alt="win" src="../assets/images/lab01/03-windows.png" /></p>
 <p>デスクトップ上にある <strong>nso-server</strong> をクリックして TeraTerm を開きます
-（Ubuntu の場合は<strong>Terminal</strong>を開きます）。
-<img alt="teratermi" src="assets/images/lab02/teraterm.png" /></p>
+（Ubuntu の場合は<strong>Terminal</strong>を開きます）。</p>
+<p><img alt="teratermi" src="../assets/images/lab01/teraterm.png" /></p>
 <h3 id="2-ansiblenso-67">ステップ 2: 提供されたAnsibleプレイブックを使用してNSO 6.7をインストールする</h3>
 <p>以下を実行し NSO のインストールを開始します。</p>
 <pre><code class="language-bash">cd ~/NSO-6.7-LTS-free
@@ -926,9 +926,9 @@ ncs_cli -Cu admin
 <h3 id="3-xrd">ステップ 3: XRdルータに到達可能であることを確認する</h3>
 <p>NSO CLI内で、両方のXRdデバイスを同期し、それらが存在することを確認します。</p>
 <pre><code class="language-text">admin@ncs# devices sync-from
-admin@ncs# show devices device
+admin@ncs# show devices list
 </code></pre>
-<p><img alt="同期された2つのXRdルータを示すデバイスのsync-fromを実行したNSO CLI" src="assets/images/lab02/nso-cli-sync-from-xrd.png" /></p>
+<p><img alt="同期された2つのXRdルータを示すデバイスのsync-fromを実行したNSO CLI" src="../assets/images/lab01/nso-cli-sync-from-xrd.png" /></p>
 <p>いずれかのデバイスの同期に失敗した場合は、ここで停止し、問題を解決してから続行してください。MCPが意味のあるツールを公開するには、正常に動作するデバイスが必要です。</p>
 <h3 id="4-nso-mcp">ステップ 4: NSO MCPパッケージをインストールする</h3>
 <p>MCPパッケージはNSOインストーラバンドルに含まれています。<strong>Linuxターミナル</strong>（NSO CLIではありません）から、パッケージディレクトリにコピーします。</p>
@@ -936,14 +936,16 @@ admin@ncs# show devices device
 cp NSO-6.7-LTS-free/work/ncs-6.7-cisco-nso-adaptive-mcp-server-1.0.0.tar.gz ncs-run/packages
 </code></pre>
 <p>次に、<strong>NSO CLI</strong> でパッケージをリロードし、MCPを有効にします。</p>
-<pre><code class="language-text">admin@ncs# packages reload
-admin@ncs# config t
+<pre><code class="language-text">ncs_cli -Cu admin
+admin@ncs# packages reload
+admin@ncs# config
 admin@ncs(config)# mcp-server enabled
 admin@ncs(config)# commit
 admin@ncs(config)# end
 </code></pre>
 <h3 id="5-mcp">ステップ 5: 同梱のテストスクリプトでMCPサーバーを検証する</h3>
-<p>MCPパッケージには <code>test-mcp.sh</code> テストスクリプトが含まれています。MCPが起動して実行されていることを確認します。</p>
+<p>MCPパッケージには <code>test-mcp.sh</code> テストスクリプトが含まれています。MCPが起動して実行されていることを確認します。
+以下のコマンドを <strong>Linux ターミナル</strong>で実行します。</p>
 <!-- lint-skip: no-output -->
 
 <pre><code class="language-bash">cd
@@ -952,7 +954,7 @@ cd cisco-nso-adaptive-mcp-server
 ./test-mcp.sh
 </code></pre>
 <p>いずれかのテストが失敗した場合は、NSO CLIに戻って再度 <code>packages reload</code> を実行し、<code>./test-mcp.sh</code> を再実行してください。<strong>5つのテストすべてに合格</strong>した場合のみ続行してください。</p>
-<p><img alt="5つのテストすべてに合格したことを示すtest-mcp.shの出力" src="assets/images/lab02/test-mcp-all-tests-passed.png" /></p>
+<p><img alt="5つのテストすべてに合格したことを示すtest-mcp.shの出力" src="../assets/images/lab01/test-mcp-all-tests-passed.png" /></p>
 <p>これでNSO MCPの準備が整いました。</p>
 <h3 id="6-web-mcp">ステップ 6: Web MCPクライアント（バックエンド + フロントエンド）を起動する</h3>
 <p>シナリオにはサンプルのWeb MCPクライアントが含まれています。これは2つのターミナルで2つのプログラムとして実行されます。
@@ -964,20 +966,18 @@ source venv/bin/activate
 python3 backend.py
 </code></pre>
 <p><strong>ターミナル 2 — フロントエンド:</strong></p>
-<!-- lint-skip: no-output -->
-
 <pre><code class="language-bash">cd NSO-6.7-LTS-free/web-ui
 source venv/bin/activate
 streamlit run frontend.py
 </code></pre>
 <p>Ubuntu では Firefoxが自動的に開くはずです。
 開かない場合または Win11 の場合は、手動でFirefoxを起動し、<a href="http://198.18.134.27:8501/">http://198.18.134.27:8501/</a> にアクセスしてください。</p>
-<p><img alt="backend-frontend-ui" src="assets/images/lab02/backend-frontend-ui.png" /></p>
+<p><img alt="backend-frontend-ui" src="../assets/images/lab01/backend-frontend-ui.png" /></p>
 <p>Web UIの左側のメニューに <strong>NSO MCP tools</strong> が表示されていることを確認します。</p>
-<p><img alt="左側のメニューにNSO MCPツールがリストされているStreamlit Web MCPクライアント" src="assets/images/lab02/mcp-web-client-tools-menu.png" /></p>
+<p><img alt="左側のメニューにNSO MCPツールがリストされているStreamlit Web MCPクライアント" src="../assets/images/lab01/mcp-web-client-tools-menu.png" /></p>
 <h3 id="7-nso">ステップ 7: 自然言語でNSOを操作する</h3>
 <p>チャットボックスで、NSOが管理しているデバイスについて簡単な言葉で質問します（例: <em>"NSOで管理されているデバイスをリストアップして。"</em>）。</p>
-<p><img alt="NSOデバイスに関する自然言語の質問に答えるWeb MCPクライアント" src="assets/images/lab02/mcp-web-client-natural-language.png" /></p>
+<p><img alt="NSOデバイスに関する自然言語の質問に答えるWeb MCPクライアント" src="../assets/images/lab01/mcp-web-client-natural-language.png" /></p>
 <h3 id="8-mcp-restricted-permit">ステップ 8: MCPポリシーを <code>restricted</code> から <code>permit</code> に変更する</h3>
 <p>デフォルトでは、セキュリティ上の理由から、アクティブなMCPポリシーは <strong><code>restricted</code></strong> になっており、<strong>11個のツール</strong>のみを公開します。デフォルトのアクションを <strong><code>permit</code></strong> に切り替えて、より多くのツールを利用できるようにします。</p>
 <p>NSO CLIで以下を実行します。</p>
@@ -988,9 +988,9 @@ admin@ncs(config)# commit
 admin@ncs(config)# end
 </code></pre>
 <p>Web MCPクライアントに戻り、左側のメニューの <strong>Refresh tools</strong> を押します。これで <strong>100個以上のツール</strong> が表示されるはずです。</p>
-<p><img alt="ポリシーをpermitに変更した後、100個以上のツールを表示しているMCP Webクライアントの左メニュー" src="assets/images/lab02/mcp-policy-permit-100-tools.png" /></p>
+<p><img alt="ポリシーをpermitに変更した後、100個以上のツールを表示しているMCP Webクライアントの左メニュー" src="../assets/images/lab01/mcp-policy-permit-100-tools.png" /></p>
 <p>これで、よりリッチなクエリを実行できるようになります。例えば、デバイスの <strong><code>live-status</code></strong> を表示するようにクライアントに依頼します。</p>
-<p><img alt="XRdデバイスのlive-status出力を返すMCP Webクライアント" src="assets/images/lab02/mcp-live-status-result.png" /></p>
+<p><img alt="XRdデバイスのlive-status出力を返すMCP Webクライアント" src="../assets/images/lab01/mcp-live-status-result.png" /></p>
 <div class="admonition warning">
 <p class="admonition-title">本番環境でのポリシー</p>
 <p><code>permit</code> は、MCP接続の反対側にいるLLMに対して非常に大きな操作領域を公開します。デモやラボのシナリオ以外では、<code>restricted</code>（または手動で厳選したポリシー）を使用してください。</p>
