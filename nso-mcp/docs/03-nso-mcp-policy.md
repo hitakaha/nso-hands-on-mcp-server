@@ -30,7 +30,7 @@ classification: "Cisco Confidential"
 
 このラボを完了すると、以下のことができるようになります。
 
-- NSO MCP ポリシーの基本亭な書き方を理解します
+- NSO MCP ポリシーの基本的な書き方を理解します
 - 読み込んだサービスパッケージを公開する方法を学びます
 - ポリシーとして としてpath, namespace の 2 通りの方法があることを理解します
 
@@ -44,12 +44,8 @@ classification: "Cisco Confidential"
 
 ## NSO MCP ポリシー
 
-NSO の ```default-action``` には下記の 3 つがあらかじめ定義されています。
-それぞれの設定を行い、ollmcp でいくつの Tools が広報されているかご確認ください。
-- deny: 
-- permit
-- restricted
-
+NSO MCP ポリシーの ```default-action``` には下記の 3 つがあらかじめ定義されています。
+それぞれの設定を行い、ollmcp でいくつの Tools が公開されているかご確認ください。
 
 | default-action | 説明                   | ollmcp での Tool 数 |
 |----------------|------------------------|---------------------|
@@ -58,16 +54,18 @@ NSO の ```default-action``` には下記の 3 つがあらかじめ定義され
 | restricted     | NSOコア操作のみ許可    | 11                 |
 
 
-以下は restricted にした場合の例、11 の Tools が広報されています。
+以下は restricted にした場合の例、11 の Tools が公開されています。
 
 ![restricted](assets/images/lab03/01-restricted.png)
 
 ## Path を使ったポリシー 1: sync-to の deny
 
-現在の restricted の状態で、**sync-to** を制限し、個の Tools に絞りたいと思います。
+一度 MCP ポリシーを restricted にしてあらかじめ定義されている 11 個に絞ります。
+その後、個別ポリシーで **sync-to** を制限し、10 個の Tools に絞りたいと思います。
 NSO で下記のような設定をします。
 
     config
+    mcp-server policies default-action restricted
     mcp-server policies rule 1 action deny
       match path /devices/device/sync-to
       commit
@@ -75,6 +73,7 @@ NSO で下記のような設定をします。
 ![deny-sync-to](assets/images/lab03/02-deny-sync-to.png)
 
 
+Ollmcp が起動している場合は一度 ++ctrl+c++ で終了し、再度起動します。
 Ollmcp で Tools の数を調べると **sync-to** が減り 10 個になっているのがわかります。
 
 ![deny-sync-to](assets/images/lab03/03-10-tools.png)
@@ -97,7 +96,7 @@ NSO で下記のような設定をします。
 ![deny-sync-to](assets/images/lab03/04-permit-live-status.png)
 
 
-Ollmcp で Tools の数を調べると **live-status* が増え 11 個になっているのがわかります。
+Ollmcp で Tools の数を調べると **live-status** が増え 11 個になっているのがわかります。
 
 ![deny-sync-to](assets/images/lab03/05-11-again.png)
 
@@ -109,7 +108,7 @@ WebUI で **Refresh Tools** ボタンを押して Tools を更新し、下記の
 
 !!! info "Cisco AI API は数分でタイムアウトします。500 エラーになった際には frontend/backend 共に起動し直します。"
 
-> *"xr-1 に sync-to して*
+> *"xr-1 に sync-to して"*
 
 ![deny-sync-to](assets/images/lab03/06-no-sync-to.png)
 
@@ -123,9 +122,9 @@ WebUI で **Refresh Tools** ボタンを押して Tools を更新し、下記の
 ## path の調査方法
 
 ポリシーで指定する path は、モデルから判断します。
-また ollmcp などの MCP クライアント側で、NSO MCP サーバーから広報された
+また ollmcp などの MCP クライアント側で、NSO MCP サーバーから公開された
 Tools を見ることでも判断できます。
-NSO では広報している Tools に path の情報も含まれています。
+NSO では公開している Tools に path の情報も含まれています。
 
 
 ![deny-sync-to](assets/images/lab03/08-path-info.png)
@@ -135,14 +134,14 @@ NSO では広報している Tools に path の情報も含まれています。
 
 ## パッケージのポリシー
 ポリシーの指定では path と namespace が使えます。
-これまで path を使ってきましたが、ここでは namespace を使い bgpmgr を広報してみます。
+これまで path を使ってきましたが、ここでは namespace を使い bgpmgr を公開してみます。
 
 namespace はパッケージの YANG ファイルの先頭で定義されています。
 bgpmgr の場合は下記のようになっています。
 
 ![deny-sync-to](assets/images/lab03/09-namespace.png)
 
-これを使ってポリシーを広報してみます。
+これを使ってポリシーを公開してみます。
 
 NSO で下記のような設定をします。
 
@@ -157,7 +156,7 @@ Ollmcp で Tools の数を調べると **bgpmgr** の Tools が 11 個増え、2
 
 ![deny-sync-to](assets/images/lab03/11-bgpmgr-namespace.png)
 
-このように namespace を使うと 1 行でパッケージの Tools を全て広報できます。
+このように namespace を使うと 1 行でパッケージの Tools を全て公開できます。
 ここまでの設定は下記のようになっています。
 
 ![deny-sync-to](assets/images/lab03/12-policy-config.png)
@@ -168,7 +167,7 @@ Ollmcp で Tools の数を調べると **bgpmgr** の Tools が 11 個増え、2
 ここまでの手順で、以下の状態になっているはずです。
 
 - [ ] default-action が **restricted** になっていること
-- [ ] **sync-to** が有効になっていないこと
+- [ ] **sync-to** が無効になっていないこと
 - [ ] **live-status/any** が有効になっていること
 - [ ] **bgpmgr** の全ての Tools が有効になっていること
 

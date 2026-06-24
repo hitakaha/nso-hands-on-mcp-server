@@ -23,7 +23,7 @@
     
     
       
-        <title>ラボ11: NSO MCP — サービスモデルとBGP - NSO MCP ハンズオン</title>
+        <title>ラボ: NSO MCP — サービスモデルとBGP - NSO MCP ハンズオン</title>
       
     
     
@@ -100,7 +100,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ラボ11: NSO MCP — サービスモデルとBGP
+              ラボ: NSO MCP — サービスモデルとBGP
             
           </span>
         </div>
@@ -786,7 +786,7 @@
 <h1 id="nso-mcp-bgp">NSO MCP — サービスモデルとBGP</h1>
 <div class="admonition info">
 <p class="admonition-title">この前のラボからの続き</p>
-<p>ここまでのラボでは、<strong>permit</strong>ポリシーを通じてNSO MCPを公開し、<a href="http://198.18.134.27:8501/">http://198.18.134.27:8501/</a> で<strong>Web MCPクライアント</strong>を実行したところで終了しました。このラボでは、実際の<strong>サービスパッケージ</strong> (<code>bgpmgr</code>) を同じMCPクライアントに組み込み、自然言語を使用して<strong>xr-1</strong>と<strong>xr-2</strong>間で<strong>BGP</strong>を設定します。その後、2つ目のMCPクライアントを使用して内部の仕組みを確認します。</p>
+<p>ここまでのラボでは、<strong>permit</strong>ポリシーを通じてNSO MCPを公開し、<a href="http://198.18.134.27:8501/">http://198.18.134.27:8501/</a> で<strong>Web MCPクライアント</strong>を実行したところで終了しました。このラボでは、実際の<strong>サービスパッケージ</strong> (<code>bgpmgr</code>) を同じMCPクライアントに組み込み、自然言語を使用して<strong>xr-1</strong>と<strong>xr-2</strong>間で<strong>BGP</strong>を設定します。その後、ollmcp クライアントを使用して内部の仕組みを確認します。</p>
 </div>
 <h2 id="_1">学習目標</h2>
 <p>このラボを完了すると、以下のことができるようになります。</p>
@@ -809,6 +809,15 @@
 </ul>
 <h2 id="_3">手順</h2>
 <h3 id="1-bgpmgr">ステップ 1: <code>bgpmgr</code> サービスパッケージをクローンしてコンパイルする</h3>
+<p>bgpmgr は 2 台のルータに対して iBGP/eBGP を設定するための NSO パッケージで
+下記の 5 つのパラメータを入力値として持ちます。</p>
+<ul>
+<li>name: 設定名</li>
+<li>dev1: 1 台目のデバイス</li>
+<li>dev1-as: 1 台目の AS 番号</li>
+<li>dev2: 2 台目のデバイス</li>
+<li>dev2-as: 2 台目の AS 番号</li>
+</ul>
 <p>Github から bgpmgr パッケージをクローンし NSO にインストールします。
 サービスパッケージをロードすると、NSO MCPに追加のツールが自動的に追加されます。</p>
 <p>下記の作業を Linux の CLI から実施します</p>
@@ -823,7 +832,7 @@ make
 </code></pre>
 <h3 id="2-nso">ステップ 2: パッケージをNSOにロードする</h3>
 <p>NSO CLIで以下を実行します。</p>
-<pre><code class="language-text">$ ncs_cli -Cu admin
+<pre><code class="language-text">ncs_cli -Cu admin
 admin@ncs# packages reload
 </code></pre>
 <p>リロードが完了するまで待ちます。</p>
@@ -832,8 +841,7 @@ admin@ncs# packages reload
 <p><img alt="ロードされたbgpmgrサービスツールを示すWeb MCPクライアントの左メニュー" src="../assets/images/lab02/mcp-bgpmgr-tools-loaded.png" /></p>
 <h3 id="4-xr-1-xr-2-bgp">ステップ 4: <code>xr-1</code> と <code>xr-2</code> の既存のBGP設定をクリアする</h3>
 <p>現在、両方のXRdルータには以前のラボのBGP設定が残っています。MCP経由で設定するためのクリーンな状態にするため、NSOを通じてこれを削除します。</p>
-<pre><code class="language-text">$ ncs_cli -Cu admin
-admin@ncs# config t
+<pre><code class="language-text">admin@ncs# config
 admin@ncs(config)# devices device xr-1 config
 admin@ncs(config-config)# no router bgp
 admin@ncs(config-config)# top
@@ -841,6 +849,11 @@ admin@ncs(config)# devices device xr-2 config
 admin@ncs(config-config)# no router bgp
 admin@ncs(config-config)# commit
 </code></pre>
+<p>実際にルータにアクセスして設定を確認されたい場合、下記の情報でアクセス可能です。</p>
+<ul>
+<li>xr-1: ssh admin@172.30.0.2 (password=cisco123)</li>
+<li>xr-2: ssh admin@172.30.0.3 (password=cisco123)</li>
+</ul>
 <h3 id="5-bgp-mcp">ステップ 5: BGPネイバーが存在しないことを確認する — MCP経由</h3>
 <p>Web MCPクライアントで、BGPネイバーが存在しないことを確認するようアシスタントに依頼します。</p>
 <blockquote>
@@ -867,7 +880,7 @@ admin@ncs(config-config)# commit
 </blockquote>
 <p><img alt="xr-1とxr-2間でEstablished状態のBGPネイバーを示すMCP Webクライアント" src="../assets/images/lab02/mcp-bgp-neighbors-up.png" /></p>
 <h3 id="9-ollmcp-mcp">ステップ 9: <code>ollmcp</code> でMCPのツールとプロンプトを検査する</h3>
-<p>このシナリオには、Ollama向けの2つ目のMCPクライアント (<code>ollmcp</code>) が同梱されています。ここでは純粋に<strong>分析</strong>目的（NSO MCPが何を公開しているかをリストアップするため）に使用します。</p>
+<p>このシナリオには、2 つ目のMCPクライアントとして <code>ollmcp</code> が同梱されています。ここでは純粋に<strong>分析</strong>目的（NSO MCPが何を公開しているかをリストアップするため）に使用します。</p>
 <p>新しいターミナルタブを開き、以下を実行します。</p>
 <pre><code class="language-bash">cd
 cd NSO-6.7-LTS-free/ollmcp
@@ -875,13 +888,13 @@ source venv/bin/activate
 ollmcp -j ollama-mcp-config.json
 </code></pre>
 <p><code>ollmcp</code> のプロンプトで <strong><code>/t</code></strong> と入力し、現在MCPによって公開されているすべてのNSOツールをリストアップします。</p>
-<p><img alt="NSO MCPのollmcpツールリスト" src="assets/images/lab11/ollmcp-tools-listing.png" /></p>
+<p><img alt="NSO MCPのollmcpツールリスト" src="../assets/images/lab02/ollmcp-tools-listing.png" /></p>
 <p><strong><code>/prompts</code></strong> と入力して、利用可能なすべてのMCPプロンプトをリストアップします。</p>
-<p><img alt="NSO MCPのollmcpプロンプトリスト" src="assets/images/lab11/ollmcp-prompts-listing.png" /></p>
+<p><img alt="NSO MCPのollmcpプロンプトリスト" src="../assets/images/lab02/ollmcp-prompts-listing.png" /></p>
 <p>このクライアントの詳細については、<a href="https://github.com/jonigl/mcp-client-for-ollama">https://github.com/jonigl/mcp-client-for-ollama</a> を参照してください。</p>
 <div class="admonition note">
 <p class="admonition-title">ollmcpのパフォーマンス</p>
-<p>このシナリオのOllamaベースのMCPクライアントは<strong>CPUのみ（GPUなし）</strong>で実行されるため、非常に低速です。インタラクティブなアシスタントとしてではなく、分析・イントロスペクションツールとして扱ってください。</p>
+<p>このシナリオのOllamaベースのMCPクライアントは<strong>CPUのみ（GPUなし）</strong>で実行されるため、非常に低速です。インタラクティブなアシスタントとしてではなく、分析ツールとして扱ってください。</p>
 </div>
 <h2 id="_4">確認</h2>
 <p>ここまでの手順で、以下の状態になっているはずです。</p>
@@ -899,7 +912,7 @@ ollmcp -j ollama-mcp-config.json
 <li><strong>アシスタントが拒否するか、空のプランを返す</strong> — MCPポリシーが <code>restricted</code> に戻っている可能性があります。<code>mcp-server policies default-action permit</code> がコミットされていることを再確認してください。</li>
 </ul>
 <h2 id="_6">次のステップ</h2>
-<p>ここまでのラボでは、自然言語でNSOを操作し、カスタムサービスパッケージを同じインターフェースに組み込む方法として <strong>NSO 6.7 MCP</strong> を紹介しました。次のラボでは <strong>カスタム <code>mcp-server policies</code></strong> を学びます。</p>
+<p>ここまでのラボでは、自然言語でNSOを操作し、カスタムサービスパッケージを同じインターフェースに組み込む方法として <strong>NSO 6.7 MCP</strong> を紹介しました。次のラボで <a href="../03-nso-mcp-policy/">NSO MCP のポリシー</a> は <strong>カスタム <code>mcp-server policies</code></strong> を学びます。</p>
 
 
 

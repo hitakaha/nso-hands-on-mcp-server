@@ -39,11 +39,11 @@ classification: "Cisco Confidential"
 
 ## カスタム Action の定義
 
-NSO はデバイスのコンフィグを管理するオーケスとレーターです。
+NSO はデバイスのコンフィグを管理するオーケストレーターです。
 しかしコンフィグの設定管理だけでなく、show コマンドなどの実行も可能です。
 NSO ではそうしたコマンドの実行を **Action** と呼びます。
 
-詳しくは弊社カスタマーサクセスチームが実施したウェビナーおよび過去のハンズオンをご参照ください。
+**Action** についてさらに詳しく知りたい方は、弊社カスタマーサクセスチームが実施したウェビナーおよび過去のハンズオンをご参照ください。
 
 - [ATX録画と資料：NSO アクションによる事前事後確認の自動化と独自コマンドの定義](https://community.cisco.com/t5/-/-/ba-p/5266609?attachment-id=236011)
 - [第五回 NSO サクセスコミュニティ (ユーザ会) の開催レポート ](https://community.cisco.com/t5/-/-/ta-p/5334663)
@@ -86,7 +86,7 @@ NSO にログインしパッケージリロードをします。
     packages reload
 
 
-# 実行スクリプトの設置
+## 実行スクリプトの設置
 
 VSCode で NSO-6.7/bin に server-health.sh という名前で下記のスクリプトを作成・保存します。
 
@@ -149,10 +149,10 @@ echo result '"'"$REPORT"'"'
 ![yang-after](assets/images/lab04/04-run-cli.png)
 
 
-# MCP で動作確認
+## MCP で動作確認
 
 
-まず NSO からスクリプトが呼べることを確認します。
+まず NSO で `action server-health` を実行し、NSO からスクリプトが呼べることを確認します。
 
 ![yang-after](assets/images/lab04/05-run-nso.png)
 

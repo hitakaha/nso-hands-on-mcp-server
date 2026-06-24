@@ -407,6 +407,61 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        実行スクリプトの設置
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP で動作確認
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        確認
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -512,6 +567,61 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        実行スクリプトの設置
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP で動作確認
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        確認
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トラブルシューティング
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -546,10 +656,10 @@
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox"/><span class="task-list-indicator"></span></label> NSO MCP ポリシーを理解していること</li>
 </ul>
 <h2 id="action">カスタム Action の定義</h2>
-<p>NSO はデバイスのコンフィグを管理するオーケスとレーターです。
+<p>NSO はデバイスのコンフィグを管理するオーケストレーターです。
 しかしコンフィグの設定管理だけでなく、show コマンドなどの実行も可能です。
 NSO ではそうしたコマンドの実行を <strong>Action</strong> と呼びます。</p>
-<p>詳しくは弊社カスタマーサクセスチームが実施したウェビナーおよび過去のハンズオンをご参照ください。</p>
+<p><strong>Action</strong> についてさらに詳しく知りたい方は、弊社カスタマーサクセスチームが実施したウェビナーおよび過去のハンズオンをご参照ください。</p>
 <ul>
 <li><a href="https://community.cisco.com/t5/-/-/ba-p/5266609?attachment-id=236011">ATX録画と資料：NSO アクションによる事前事後確認の自動化と独自コマンドの定義</a></li>
 <li><a href="https://community.cisco.com/t5/-/-/ta-p/5334663">第五回 NSO サクセスコミュニティ (ユーザ会) の開催レポート </a></li>
@@ -580,7 +690,7 @@ make
 <pre><code>ncs_cli -Cu admin
 packages reload
 </code></pre>
-<h1 id="_3">実行スクリプトの設置</h1>
+<h2 id="_3">実行スクリプトの設置</h2>
 <p>VSCode で NSO-6.7/bin に server-health.sh という名前で下記のスクリプトを作成・保存します。</p>
 <pre><code class="language-bash">#!/usr/bin/bash
 
@@ -634,8 +744,8 @@ chmod +x server-health.sh
 </code></pre>
 <p>スクリプトを実行し、サーバの情報が出力されることを確認します。</p>
 <p><img alt="yang-after" src="../assets/images/lab04/04-run-cli.png" /></p>
-<h1 id="mcp">MCP で動作確認</h1>
-<p>まず NSO からスクリプトが呼べることを確認します。</p>
+<h2 id="mcp">MCP で動作確認</h2>
+<p>まず NSO で <code>action server-health</code> を実行し、NSO からスクリプトが呼べることを確認します。</p>
 <p><img alt="yang-after" src="../assets/images/lab04/05-run-nso.png" /></p>
 <p>次にこのパッケージを MCP Tools として公開します。
 下記の設定を NSO で行います。</p>
