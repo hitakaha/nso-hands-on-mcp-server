@@ -108,7 +108,7 @@ WebUI で **Refresh Tools** ボタンを押して Tools を更新し、下記の
 
 !!! info "Cisco AI API は数分でタイムアウトします。500 エラーになった際には frontend/backend 共に起動し直します。"
 
-> *"xr-1 に sync-to して"*
+> *"このチャットから sync-to を実行することは可能？"*
 
 ![deny-sync-to](assets/images/lab03/06-no-sync-to.png)
 

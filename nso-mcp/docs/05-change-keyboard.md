@@ -23,7 +23,7 @@ Win11 でキーボードを変更するには下記のようにします。
 
 ![win11-option](assets/images/lab05/03-change-layout.png)
 
-**English keyboard (101/102 key)** を選択し再起動します。
+**English keyboard (101/102 key)** を選択し再起動（Restart Nowを選択）します。
 
 
 ![101/102](assets/images/lab05/04-101-102.png)
@@ -43,6 +43,9 @@ Win11 でキーボードを変更するには下記のようにします。
 ![settings](assets/images/lab05/06-move-up.png)
 
 その後ウインドウを閉じ、再起動します。
+右上の電源ボタンを押し、**Restart...** を選択します。
+
+![settings](assets/images/lab05/07-restart-ubuntu.png)
 
 
 !!! info "再起動してもシナリオには影響ありません"

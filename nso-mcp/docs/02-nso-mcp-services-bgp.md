@@ -105,7 +105,15 @@ admin@ncs(config-config)# top
 admin@ncs(config)# devices device xr-2 config
 admin@ncs(config-config)# no router bgp
 admin@ncs(config-config)# commit
+admin@ncs(config-config)# end
+admin@ncs# exit
 ```
+
+下記のように一括で削除も可能です。
+
+
+![delete BGP](assets/images/lab02/delete-bgp-all.png)
+
 
 実際にルータにアクセスして設定を確認されたい場合、下記の情報でアクセス可能です。
 
