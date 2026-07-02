@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>MCP（Model Context Protocol）概要</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Reveal.js core + theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css" id="theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+
+  <style>
+    .mermaid { background: #fff; border-radius: 8px; padding: 12px; }
+    .small { font-size: 0.8em; }
+    .tiny { font-size: 0.65em; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      margin: 4px;
+      border-radius: 999px;
+      background: #1f6feb;
+      color: #fff;
+      font-size: 0.75em;
+    }
+    .arch {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.85em;
+      color: #58a6ff;
+      display: inline-block;
+      margin: 12px 0;
+    }
+    .reveal h1 { font-size: 2.2em; }
+    .reveal h2 { color: #58a6ff; font-size: 1.5em; }
+    .reveal section ul { display: inline-block; text-align: left; }
+    .reveal table { font-size: 0.78em; margin: 0 auto; }
+    .reveal table th { color: #58a6ff; }
+    .note {
+      border-left: 3px solid #f0ad4e;
+      padding: 8px 14px;
+      background: rgba(240, 173, 78, 0.1);
+      font-size: 0.8em;
+      text-align: left;
+      margin-top: 16px;
+    }
+    .spec {
+      border-left: 3px solid #2ea043;
+      padding: 8px 14px;
+      background: rgba(46, 160, 67, 0.1);
+      font-size: 0.75em;
+      text-align: left;
+      margin-top: 16px;
+    }
+    .center { text-align: center; }
+    code { color: #f0ad4e; }
+    .demo-title {
+      font-size: 3em;
+      color: #58a6ff;
+      letter-spacing: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ===== Title ===== -->
+      <section>
+        <h1>🔌 MCP</h1>
+        <h3>Model Context Protocol — 概要</h3>
+        <p class="small">LLMアプリケーションと外部コンテキスト・ツールをつなぐオープン標準です。</p>
+        <p class="tiny">MCP仕様リビジョン <strong>2025-03-26</strong> に準拠しています。</p>
+      </section>
+
+      <!-- ===== Section 1: What is MCP ===== -->
+      <section>
+        <h2>MCPとは？</h2>
+        <ul>
+          <li>Anthropic が2024年11月に提唱した<strong>オープンプロトコル</strong>です</li>
+          <li><strong>LLMアプリケーション</strong>が外部の<strong>コンテキストプロバイダー</strong>に接続する方法を標準化しています</li>
+        </ul>
+        <div class="spec">
+          📘 AI App の「USB-C」といわれ 1 つのコネクタで多様な機能をつなぎます。
+        </div>
+      </section>
+
+      <section>
+        <h2>MCPサーバーとは？</h2>
+        <ul>
+          <li>MCP経由で<strong>機能を公開</strong>するプログラムです</li>
+          <li>ローカル／リモートのいずれにも対応しています</li>
+          <li>モデル非依存 — どのLLMが利用されているかを関知しません</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>トランスポート</h2>
+        <p class="small">MCPは2種類の標準トランスポートを定義しています：</p>
+        <ul>
+          <li>📟 <strong>stdio</strong> — サーバーをサブプロセスとして起動し、stdin/stdout 経由でメッセージを送受信します</li>
+          <li>🌐 <strong>Streamable HTTP</strong> — リモートサーバー向けの現行標準です（仕様 rev. 2025-03-26 以降）</li>
+        </ul>
+        <div class="note">
+          ℹ️ 旧来の <strong>HTTP+SSE</strong> トランスポートは現在<em>非推奨</em>ですが、後方互換のため引き続きサポートしています。
+        </div>
+      </section>
+
+      <section>
+        <h2>アーキテクチャ</h2>
+        <p class="small">仕様が定義する3つのロールは以下のとおりです：</p>
+        <div class="arch">LLM &nbsp;⇄&nbsp; Host (with MCP Client) &nbsp;⇄&nbsp; MCP Server(s)</div>
+        <ul class="small">
+          <li><strong>LLM</strong> — 任意の LLM モデル、複数使用可能です</li>
+          <li><strong>Host</strong> — アプリケーション本体です（Claude Desktop、IDE など）</li>
+          <li><strong>Server</strong> — ツール・リソース・プロンプトを提供します</li>
+        </ul>
+        <div class="note">
+          ⚠️ LLM自体はMCPを直接扱いません — すべての制御は Host が担います。
+        </div>
+      </section>
+
+      <section>
+        <h2>MCP サーバが公開するもの</h2>
+        <p class="center">
+          <span class="badge">🛠️ Tools</span>
+          <span class="badge">📚 Resources</span>
+          <span class="badge">📝 Prompts</span>
+        </p>
+        <ul class="small">
+          <li>🛠️ <strong>Tools</strong> → 実行可能な関数 <br><em>（例：<code>search_db</code>、<code>send_email</code>）</em></li>
+          <li>📚 <strong>Resources</strong> → 参照可能なデータ <br><em>（例：ファイル、DBレコード、APIレスポンス）</em></li>
+          <li>📝 <strong>Prompts</strong> → パラメータ付きのプロンプトのテンプレート <br><em>（例：スラッシュコマンド、ワークフロー）</em></li>
+        </ul>
+      </section>
+
+      <!-- ===== Section 2: Without MCP ===== -->
+      <section>
+        <h2>MCP<em>なし</em>での LLM 実装</h2>
+        <p class="small">従来のループ（ユーザー ↔ モデルのみ）です。</p>
+        <div class="mermaid">
+flowchart LR
+    U([👤 ユーザー]) -- "プロンプト" --> L[[🧠 LLM]]
+    L -- "応答" --> U
+        </div>
+      </section>
+
+      <section>
+        <h2>MCPなしの制約</h2>
+        <ul>
+          <li>❌ LLMは学習データの範囲しか知りません</li>
+          <li>❌ リアルタイム・非公開データにはアクセスできません</li>
+          <li>❌ 現実世界への操作・アクションはできません</li>
+          <li>✅ 汎用的なQ&amp;Aや推論には引き続き有効です</li>
+        </ul>
+      </section>
+
+      <!-- ===== Section 3: With MCP ===== -->
+      <section>
+        <h2>MCP<em>あり</em>での LLM 実装</h2>
+        <p class="small">ステップ1：ディスカバリ。HostのMCP Clientがサーバーに利用可能な ツール等を問い合わせます。</p>
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as 👤 ユーザー
+    participant H as 🖥️ Host (MCP Client)
+    participant M as 🔌 MCP Server
+    participant L as 🧠 LLM
+
+    U->>H: プロンプト送信
+    H->>M: tools/list
+    M-->>H: ツール定義（名前・スキーマ）
+    H->>L: プロンプト＋ツールスキーマ
+        </div>
+      </section>
+
+      <section>
+        <h2>ツール呼び出しループ</h2>
+        <p class="small">ステップ2：LLMがツール呼び出しを要求し、HostがMCP経由で実行します。</p>
+        <div class="mermaid">
+sequenceDiagram
+    participant H as 🖥️ Host
+    participant M as 🔌 MCP Server
+    participant L as 🧠 LLM
+
+    loop LLMがツール呼び出しを終了するまで
+        L-->>H: tool_use: 名前＋引数
+        H->>M: tools/call (name, args)
+        M-->>H: ツール実行結果
+        H->>L: ツール結果
+    end
+    L-->>H: 最終回答
+        </div>
+      </section>
+
+      <section>
+        <h2>重要なポイント：2つのプロトコル</h2>
+        <ul>
+          <li>LLMはReAct: Reasoning（思考）- Acting（行動）スタイルのプロンプト等を使用します</li>
+          <li>MCPサーバーはプロトコルとして<strong>MCP</strong>を使用します</li>
+          <li><strong>Host</strong>がその間の変換・仲介を担います</li>
+        </ul>
+        <div class="spec">
+          💡 ポイント：Hostさえ対応していれば、同じMCPサーバーをどのLLMとも組み合わせられます。
+        </div>
+      </section>
+
+      <!-- ===== Section 4: Primitives — control model ===== -->
+      <section>
+        <h2>プリミティブ — 誰が制御するか？</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>プリミティブ</th>
+              <th>制御主体</th>
+              <th>トリガー</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🛠️ Tools</td>
+              <td>LLM モデル</td>
+              <td>LLMが呼び出しを判断</td>
+            </tr>
+            <tr>
+              <td>📚 Resources</td>
+              <td>アプリケーション</td>
+              <td>Hostがコンテキストとして読み込み・注入</td>
+            </tr>
+            <tr>
+              <td>📝 Prompts</td>
+              <td>ユーザー</td>
+              <td>ユーザーがテンプレートを選択</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="tiny">これらの制御モデルは仕様の設計意図に基づいています。</p>
+      </section>
+
+      <!-- ===== Section 6: Why it matters ===== -->
+      <section>
+        <h2>MCPが重要な理由</h2>
+        <ul>
+          <li>✅ <strong>標準化</strong> — サーバーを一度実装すれば多くのHostで再利用できます</li>
+          <li>✅ <strong>組み合わせ可能</strong> — 1セッション内で複数のサーバーを同時利用できます</li>
+          <li>✅ <strong>役割の明確化</strong> — モデルが推論、サーバーが機能提供、Hostが制御を担います</li>
+          <li>✅ <strong>監査可能</strong> — その場限りの組み合わせではなく、明確に定義された方法です</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>よくあるMCPの<em>間違い</em></h2>
+        <ul>
+          <li>❌ LLM APIの代替ではありません</li>
+          <li>❌ それ単体ではサンドボックスやセキュリティ境界にはなりません</li>
+          <li>❌ 特定のモデルベンダーへの依存はありません</li>
+          <li>❌ 魔法ではありません — 制御の実装は Host が担います</li>
+        </ul>
+      </section>
+
+      <!-- ===== NEW Chapter: In-Product AI — NSO ===== -->
+      <section>
+        <h1>AI によるネットワーク制御</h1>
+        <h3>🚀 NSO が MCP サーバとして機能します</h3>
+        <p class="small"><em>NSO 6.7</em>での新機能です</p>
+      </section>
+
+      <section>
+        <h2>必要な構成</h2>
+        <p class="small">MCPを使うための各役割は下記のようになります：</p>
+        <ul>
+          <li>🔌 <strong>MCP Server</strong> → <strong>Cisco NSO</strong> <br><span class="tiny">NSOのデータ・操作を Tools/Resources として公開します</span></li>
+          <li>🖥️ <strong>Host + MCP Client</strong> → <strong>Streamlit UIのカスタムPythonアプリ</strong></li>
+          <li>🧠 <strong>LLM</strong> → <strong>Cisco AI</strong>（デモ用LLM）</li>
+        </ul>
+        <div class="spec">
+          📘 同じMCPアーキテクチャに、弊社の各コンポーネントを接続した構成です。
+        </div>
+      </section>
+
+      <section>
+        <h2>アーキテクチャ図</h2>
+        <div class="mermaid">
+flowchart LR
+    U([👤 ユーザー])
+    subgraph HOST["🖥️ Host — Streamlit Python App"]
+      UI[Streamlit UI]
+      C[MCP Client]
+    end
+    L[[🧠 Cisco AI LLM]]
+    subgraph NSO["🔌 Cisco NSO — MCP Server"]
+      T[🛠️ Tools]
+      R[📚 Resources]
+      P[📝 Prompts]
+    end
+
+    U -- プロンプト --> UI
+    UI --> C
+    C <-- プロンプト＋ツール --> L
+    C <-- JSON-RPC / MCP --> NSO
+        </div>
+        <p class="tiny">Cisco AIが推論し、Streamlit Hostが制御、NSOがネットワーク機能を提供します。</p>
+      </section>
+
+      <section>
+        <h2>リクエストフロー</h2>
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as 👤 ユーザー
+    participant S as 🖥️ Streamlit Host
+    participant N as 🔌 NSO (MCP Server)
+    participant C as 🧠 Cisco AI
+
+    U->>S: ネットワークの照会・変更を依頼
+    S->>N: tools/list
+    N-->>S: NSOツール一覧（例：get_device, set_config）
+    S->>C: プロンプト＋ツール
+    loop ツール呼び出しループ
+        C-->>S: tool_use (name, args)
+        S->>N: tools/call
+        N-->>S: NSOデータ／操作結果
+        S->>C: ツール結果
+    end
+    C-->>S: 最終回答
+    S-->>U: Streamlit UIで結果を表示
+        </div>
+      </section>
+
+      <section>
+        <h2>この構成が強力な理由</h2>
+        <ul>
+          <li>✅ NSOのコアを変更せずに<strong>AI対応</strong>を実現できます</li>
+          <li>✅ Cisco AIが実際のネットワーク状態を<strong>参照・操作</strong>できます</li>
+          <li>✅ Streamlit Hostは<strong>シンプル</strong>なまま — 制御とUIのみを担います</li>
+          <li>✅ 標準プロトコルにより、LLMの差し替えやMCPサーバーの追加が容易です</li>
+        </ul>
+      </section>
+
+      <!-- ===== Closing ===== -->
+      <section>
+        <h1>まとめ</h1>
+        <p>MCPはLLMを<em>チャットボット</em>から、<br><strong>手と目を持つエージェント</strong>へと変えます。🤖</p>
+        <p class="small">…NSOをMCPサーバーにすることで、その手はネットワークにまで届きます。</p>
+        <p class="tiny">ありがとうございました！👋</p>
+      </section>
+
+      <!-- ===== Demo slide ===== -->
+      <section data-background-color="#0d1117">
+        <p class="demo-title">💻 ハンズオン</p>
+        <p class="small">Cisco NSO + Cisco AI + Streamlit を実際に触ってみましょう！</p>
+	<p class="small"><a href="https://hitakaha.github.io/nso-hands-on-mcp-server/">ハンズオンドキュメントに戻る</a></p>
+      </section>
+
+
+    </div>
+  </div>
+
+  <!-- Reveal.js + plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+  <script>
+    mermaid.initialize({ startOnLoad: false, theme: 'default' });
+
+    Reveal.initialize({
+      hash: true,
+      slideNumber: 'c/t',
+      transition: 'slide',
+      width: 1200,
+      height: 720,
+      margin: 0.08,
+      plugins: [ RevealHighlight, RevealNotes ]
+    });
+
+    function renderMermaid() {
+      document.querySelectorAll('.mermaid').forEach((el, i) => {
+        if (!el.dataset.processed) {
+          const code = el.textContent;
+          mermaid.render('mmd-' + i + '-' + Date.now(), code).then(({ svg }) => {
+            el.innerHTML = svg;
+            el.dataset.processed = 'true';
+          });
+        }
+      });
+    }
+    Reveal.on('ready', renderMermaid);
+    Reveal.on('slidechanged', renderMermaid);
+  </script>
+</body>
+</html>
